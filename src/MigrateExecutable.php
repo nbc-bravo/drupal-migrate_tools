@@ -339,6 +339,9 @@ class MigrateExecutable extends MigrateExecutableBase {
    *
    * @param \Drupal\migrate_plus\Event\MigratePrepareRowEvent $event
    *   The prepare-row event.
+   *
+   * @throws \Drupal\migrate\MigrateSkipRowException
+   *
    */
   public function onPrepareRow(MigratePrepareRowEvent $event) {
     if ($this->idlist) {
