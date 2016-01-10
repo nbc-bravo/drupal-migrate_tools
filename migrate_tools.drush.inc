@@ -228,7 +228,7 @@ function drush_migrate_tools_migrate_import($migration_names = '') {
 
   // Take it one group at a time, importing the migrations within each group.
   foreach ($migrations as $group_id => $migration_list) {
-    array_walk($migration_list, '_drush_migrate_tools_execute_migration');
+    array_walk($migration_list, '_drush_migrate_tools_execute_migration', $options);
   }
 }
 
