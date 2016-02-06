@@ -7,7 +7,6 @@
 namespace Drupal\migrate_tools\Controller;
 
 use Drupal\Core\Config\Entity\ConfigEntityListBuilder;
-use Drupal\migrate\Entity\MigrationInterface;
 use Drupal\Core\Entity\EntityHandlerInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
@@ -162,7 +161,7 @@ class MigrationListBuilder extends ConfigEntityListBuilder implements EntityHand
   /**
    * {@inheritdoc}
    */
-  public function getDefaultOperations(MigrationInterface $entity) {
+  public function getDefaultOperations(EntityInterface $entity) {
     $operations = parent::getDefaultOperations($entity);
     $migration_group = $entity->getThirdPartySetting('migrate_plus', 'migration_group');
     if (!$migration_group) {
