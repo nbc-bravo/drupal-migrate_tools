@@ -109,8 +109,17 @@ class MigrationListBuilder extends ConfigEntityListBuilder implements EntityHand
     if (!$migration_group) {
       $migration_group = 'default';
     }
-    // @todo: This is most likely not a Best Practice (tm).
-    $row['messages']['data']['#markup'] = '<a href="/admin/structure/migrate/manage/' . $migration_group . '/migrations/' . $migration->id() . '/messages">' . $map->messageCount() .'</a>';
+    $route_parameters = array(
+      'migration_group' => $migration_group,
+      'migration' => $migration->id()
+    );
+    $row['messages'] = array(
+      'data' => array(
+        '#type' => 'link',
+        '#title' => $map->messageCount(),
+        '#url' => Url::fromRoute("migrate_tools.messages", $route_parameters),
+      ),
+    );
     $migrate_last_imported_store = \Drupal::keyValue('migrate_last_imported');
     $last_imported =  $migrate_last_imported_store->get($migration->id(), FALSE);
     if ($last_imported) {
