@@ -251,11 +251,12 @@ function _drush_migrate_tools_execute_migration(MigrationInterface $migration, $
   $log = new DrushLogMigrateMessage();
 
   if (drush_get_option('execute-dependencies')) {
-    // @todo: Needs to be redone for migrations-as-plugins.
-    drush_log('The execute-dependencies option is not current supported', 'warning');
-/*    $required_migrations = \Drupal::entityTypeManager()->getStorage('migration')->loadMultiple($migration->get('requirements'));
-    $dependency_options = array_merge($options, ['is_dependency' => TRUE]);
-    array_walk($required_migrations, __FUNCTION__, $dependency_options);*/
+    if ($required_IDS = $migration->get('requirements')) {
+      $manager = \Drupal::service('plugin.manager.config_entity_migration');
+      $required_migrations = $manager->createInstances($required_IDS);
+      $dependency_options = array_merge($options, ['is_dependency' => TRUE]);
+      array_walk($required_migrations, __FUNCTION__, $dependency_options);
+    }
   }
   if ($options['force']) {
     $migration->set('requirements', []);
