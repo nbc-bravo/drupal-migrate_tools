@@ -8,6 +8,7 @@
 use Drupal\Component\Plugin\Exception\PluginException;
 use Drupal\Component\Plugin\Exception\PluginNotFoundException;
 use Drupal\Component\Utility\Unicode;
+use Drupal\Core\Database\ConnectionNotDefinedException;
 use Drupal\migrate\Exception\RequirementsException;
 use Drupal\migrate\Plugin\MigrationInterface;
 use Drupal\migrate_tools\MigrateExecutable;
@@ -432,50 +433,22 @@ function drush_migrate_tools_migration_list($group_id = '', $migration_ids = '')
     $migration_ids = [];
   }
 
-  /** @var \Drupal\migrate\Plugin\MigrationPluginManagerInterface $manager */
-  $manager = \Drupal::service('plugin.manager.migration');
-  $plugin_definitions = $manager->getDefinitions();
+  $manager = \Drupal::service('plugin.manager.config_entity_migration');
+  $plugins = $manager->createInstances([]);
   $migrations = [];
-  foreach ($plugin_definitions as $plugin_id => $definition) {
-    if (isset($definition['third_party_settings']['migrate_plus']['migration_group'])) {
-      $configured_group_id = $definition['third_party_settings']['migrate_plus']['migration_group'];
+  foreach ($plugins as $id => $migration) {
+    $third_party_settings = $migration->get('third_party_settings');
+    if (isset($third_party_settings['migrate_plus']['migration_group'])) {
+      $configured_group_id = $third_party_settings['migrate_plus']['migration_group'];
     }
     else {
-      // @todo: These Drupal-to-Drupal migrations have no Drupal-source-specific
-      // configuration to enable us to skip them in a general way. Explicitly
-      // skip them if they have no explicit group.
-      if ($plugin_id == 'block_content_type' || $plugin_id == 'block_content_body_field') {
-        continue;
-      }
       $configured_group_id = 'default';
     }
     if (empty($group_id) || $group_id == $configured_group_id) {
-      if (empty($migration_ids) || in_array(Unicode::strtolower($plugin_id), $migration_ids)) {
-        try {
-          $migration = $manager->createInstance($plugin_id, $definition);
-          $migration->checkRequirements();
-          $migrations[$configured_group_id][$plugin_id] = $migration;
-        }
-        catch (PluginNotFoundException $e) {
-          // Ignore migrations that are not fully configured.
-        }
-        catch (PluginException $e) {
-          // @todo: Workaround just to catch d6_field* migrations using
-          // CckMigration class.
-        }
-        catch (RequirementsException $e) {
-          // Because migrations are not pre-sorted, we get requirements
-          // exceptions when a migration is instantiated before its
-          // dependencies. For now, trust that they will show up.
-          $migrations[$configured_group_id][$plugin_id] = $migration;
-        }
+      if (empty($migration_ids) || in_array(Unicode::strtolower($id), $migration_ids)) {
+        $migrations[$configured_group_id][$id] = $migration;
       }
     }
   }
-  // As a final step, sort the migrations for each group in dependency order.
-  $result = $migrations;
-  foreach ($migrations as $group_id => $migration_list) {
-    $result[$group_id] = $manager->buildDependencyMigration($migration_list, []);
-  }
-  return $result;
+  return $migrations;
 }
