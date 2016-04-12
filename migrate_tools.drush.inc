@@ -438,11 +438,8 @@ function drush_migrate_tools_migration_list($group_id = '', $migration_ids = '')
   $plugins = $manager->createInstances([]);
   $migrations = [];
   foreach ($plugins as $id => $migration) {
-    $third_party_settings = $migration->get('third_party_settings');
-    if (isset($third_party_settings['migrate_plus']['migration_group'])) {
-      $configured_group_id = $third_party_settings['migrate_plus']['migration_group'];
-    }
-    else {
+    $configured_group_id = $migration->get('migration_group');
+    if (empty($configured_group_id)) {
       $configured_group_id = 'default';
     }
     if (empty($group_id) || $group_id == $configured_group_id) {
