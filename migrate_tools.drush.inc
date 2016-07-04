@@ -232,6 +232,9 @@ function drush_migrate_tools_migrate_import($migration_names = '') {
   }
 
   $migrations = drush_migrate_tools_migration_list($group_names, $migration_names);
+  if (empty($migrations)) {
+    drush_log(dt('No migrations found.'), 'error');
+  }
 
   // Take it one group at a time, importing the migrations within each group.
   foreach ($migrations as $group_id => $migration_list) {
@@ -291,6 +294,9 @@ function drush_migrate_tools_migrate_rollback($migration_names = '') {
   $log = new DrushLogMigrateMessage();
 
   $migrations = drush_migrate_tools_migration_list($group_names, $migration_names);
+  if (empty($migrations)) {
+     drush_log(dt('No migrations found.'), 'error');
+  }
 
   // Take it one group at a time, rolling back the migrations within each group.
   foreach ($migrations as $group_id => $migration_list) {
