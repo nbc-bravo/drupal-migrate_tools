@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\migrate_tools\MigrateExecutable.
- */
-
 namespace Drupal\migrate_tools;
 
 use Drupal\migrate\Event\MigratePreRowSaveEvent;
