@@ -31,7 +31,7 @@ function migrate_tools_drush_command() {
       'migrate-status --group=beer' => 'Retrieve status for all migrations in a given group',
       'migrate-status --tag=user' => 'Retrieve status for all migrations with a given tag',
       'migrate-status --group=beer --tag=user' => 'Retrieve status for all migrations in the beer group and with the user tag',
-      'migrate-status BeerTerm,BeerNode' => 'Retrieve status for specific migrations',
+      'migrate-status beer_term,beer_node' => 'Retrieve status for specific migrations',
     ],
     'drupal dependencies' => ['migrate_tools'],
     'aliases' => ['ms'],
@@ -51,16 +51,16 @@ function migrate_tools_drush_command() {
       'execute-dependencies' => 'Execute all dependent migrations first.',
     ],
     'arguments' => [
-      'migration' => 'Name of migration(s) to import. Delimit multiple using commas.',
+      'migration' => 'ID of migration(s) to import. Delimit multiple using commas.',
     ],
     'examples' => [
       'migrate-import --all' => 'Perform all migrations',
       'migrate-import --group=beer' => 'Import all migrations in the beer group',
       'migrate-import --tag=user' => 'Import all migrations with the user tag',
       'migrate-import --group=beer --tag=user' => 'Import all migrations in the beer group and with the user tag',
-      'migrate-import BeerTerm,BeerNode' => 'Import new terms and nodes',
-      'migrate-import BeerUser --limit=2' => 'Import no more than 2 users',
-      'migrate-import BeerUser --idlist=5' => 'Import the user record with source ID 5',
+      'migrate-import beer_term,beer_node' => 'Import new terms and nodes',
+      'migrate-import beer_user --limit=2' => 'Import no more than 2 users',
+      'migrate-import beer_user --idlist=5' => 'Import the user record with source ID 5',
     ],
     'drupal dependencies' => ['migrate_tools'],
     'aliases' => ['mi'],
@@ -71,7 +71,7 @@ function migrate_tools_drush_command() {
     'options' => array(
       'all' => 'Process all migrations.',
       'group' => 'A comma-separated list of migration groups to rollback',
-      'tag' => 'Name of the migration tag to rollback',
+      'tag' => 'ID of the migration tag to rollback',
       'feedback' => 'Frequency of progress messages, in items processed',
     ),
     'arguments' => array(
@@ -82,7 +82,7 @@ function migrate_tools_drush_command() {
       'migrate-rollback --group=beer' => 'Rollback all migrations in the beer group',
       'migrate-rollback --tag=user' => 'Rollback all migrations with the user tag',
       'migrate-rollback --group=beer --tag=user' => 'Rollback all migrations in the beer group and with the user tag',
-      'migrate-rollback BeerTerm,BeerNode' => 'Rollback imported terms and nodes',
+      'migrate-rollback beer_term,beer_node' => 'Rollback imported terms and nodes',
     ),
     'drupal dependencies' => array('migrate_tools'),
     'aliases' => array('mr'),
@@ -91,7 +91,7 @@ function migrate_tools_drush_command() {
   $items['migrate-stop'] = [
     'description' => 'Stop an active migration operation.',
     'arguments' => [
-      'migration' => 'Name of migration to stop',
+      'migration' => 'ID of migration to stop',
     ],
     'drupal dependencies' => ['migrate_tools'],
     'aliases' => ['mst'],
@@ -100,7 +100,7 @@ function migrate_tools_drush_command() {
   $items['migrate-reset-status'] = [
     'description' => 'Reset a active migration\'s status to idle.',
     'arguments' => [
-      'migration' => 'Name of migration to reset',
+      'migration' => 'ID of migration to reset',
     ],
     'drupal dependencies' => ['migrate_tools'],
     'aliases' => ['mrs'],
@@ -109,7 +109,7 @@ function migrate_tools_drush_command() {
   $items['migrate-messages'] = [
     'description' => 'View any messages associated with a migration.',
     'arguments' => [
-      'migration' => 'Name of the migration',
+      'migration' => 'ID of the migration',
     ],
     'options' => [
       'csv' => 'Export messages as a CSV'
@@ -124,7 +124,7 @@ function migrate_tools_drush_command() {
   $items['migrate-fields-source'] = [
     'description' => 'List the fields available for mapping in a source.',
     'arguments' => [
-      'migration' => 'Name of the migration',
+      'migration' => 'ID of the migration',
     ],
     'examples' => [
       'migrate-fields-source my_node' => 'List fields for the source in the my_node migration',
