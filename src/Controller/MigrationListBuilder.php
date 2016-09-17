@@ -89,7 +89,7 @@ class MigrationListBuilder extends ConfigEntityListBuilder implements EntityHand
   /**
    * Builds a row for a migration plugin.
    *
-   * @param \Drupal\Core\Entity\EntityInterface $migration
+   * @param \Drupal\Core\Entity\EntityInterface $migration_entity
    *   The migration plugin for which to build the row.
    *
    * @return array
@@ -142,7 +142,7 @@ class MigrationListBuilder extends ConfigEntityListBuilder implements EntityHand
     else {
       $row['last_imported'] = '';
     }
-    return $row + parent::buildRow($migration_entity);
+    return $row; // + parent::buildRow($migration_entity);
   }
 
   /**
