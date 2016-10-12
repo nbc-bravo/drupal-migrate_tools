@@ -356,7 +356,7 @@ class MigrateExecutable extends MigrateExecutableBase {
       $this->resetCounters();
     }
     $this->counter++;
-    if ($this->itemLimit && $this->counter >= $this->itemLimit) {
+    if ($this->itemLimit && ($this->getProcessedCount() + 1) >= $this->itemLimit) {
       $event->getMigration()->interruptMigration(MigrationInterface::RESULT_COMPLETED);
     }
 
