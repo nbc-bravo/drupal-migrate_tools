@@ -44,13 +44,13 @@ entity.migration.list:
     _permission: 'administer migrations'
 
 # This is the router item for adding our migration entity.
-entity.migration.add_form:
-  path: '/admin/structure/migrate/manage/{migration_group}/migrations/add'
-  defaults:
-    _title: 'Add migration'
-    _entity_form: migration.add
-  requirements:
-    _entity_create_access: migration
+#entity.migration.add_form:
+#  path: '/admin/structure/migrate/manage/{migration_group}/migrations/add'
+#  defaults:
+#    _title: 'Add migration'
+#    _entity_form: migration.add
+#  requirements:
+#    _entity_create_access: migration
 
 # This is the router item for editing our migration entity.
 entity.migration.edit_form:
