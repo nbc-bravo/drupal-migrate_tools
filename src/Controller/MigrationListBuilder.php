@@ -127,7 +127,21 @@ class MigrationListBuilder extends ConfigEntityListBuilder implements EntityHand
    */
   public function buildRow(EntityInterface $migration_entity) {
     $migration = $this->migrationConfigEntityPluginManager->createInstance($migration_entity->id());
-    $row['label'] = $migration->label();
+    $migration_group = $migration->get('migration_group');
+    if (!$migration_group) {
+      $migration_group = 'default';
+    }
+    $route_parameters = array(
+      'migration_group' => $migration_group,
+      'migration' => $migration->id(),
+    );
+    $row['label'] = array(
+      'data' => array(
+        '#type' => 'link',
+        '#title' => $migration->label(),
+        '#url' => Url::fromRoute("entity.migration.overview", $route_parameters),
+      ),
+    );
     $row['machine_name'] = $migration->id();
     $row['status'] = $migration->getStatusLabel();
 
@@ -144,14 +158,6 @@ class MigrationListBuilder extends ConfigEntityListBuilder implements EntityHand
     else {
       $row['unprocessed'] = $row['total'] - $map->processedCount();
     }
-    $migration_group = $migration->get('migration_group');
-    if (!$migration_group) {
-      $migration_group = 'default';
-    }
-    $route_parameters = array(
-      'migration_group' => $migration_group,
-      'migration' => $migration->id()
-    );
     $row['messages'] = array(
       'data' => array(
         '#type' => 'link',
