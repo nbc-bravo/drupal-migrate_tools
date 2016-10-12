@@ -332,7 +332,7 @@ class MigrateExecutable extends MigrateExecutableBase {
    *
    */
   public function onPrepareRow(MigratePrepareRowEvent $event) {
-    if ($this->idlist) {
+    if (!empty($this->idlist)) {
       $row = $event->getRow();
       /**
        * @TODO replace for $source_id = $row->getSourceIdValues(); when https://www.drupal.org/node/2698023 is fixed
