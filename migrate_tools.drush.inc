@@ -6,7 +6,9 @@
  */
 
 use Drupal\Component\Utility\Unicode;
+use Drupal\migrate\Exception\RequirementsException;
 use Drupal\migrate\Plugin\MigrationInterface;
+use Drupal\migrate\Plugin\RequirementsInterface;
 use Drupal\migrate_tools\MigrateExecutable;
 use Drupal\migrate_tools\DrushLogMigrateMessage;
 use Drupal\Core\Datetime\DateFormatter;
@@ -445,20 +447,33 @@ function drush_migrate_tools_migration_list($migration_ids = '') {
   $filter['migration_group'] = drush_get_option('group') ? explode(',', drush_get_option('group')) : [];
   $filter['migration_tags'] = drush_get_option('tag') ? explode(',', drush_get_option('tag')) : [];
 
-  $manager = \Drupal::service('plugin.manager.config_entity_migration');
+  $manager = \Drupal::service('plugin.manager.migration');
   $plugins = $manager->createInstances([]);
   $matched_migrations = [];
 
   // Get the set of migrations that may be filtered.
   if (empty($migration_ids)) {
-    $matched_migrations  = $plugins;
+    $matched_migrations = $plugins;
   }
   else {
     // Get the requested migrations.
     $migration_ids = explode(',', Unicode::strtolower($migration_ids));
     foreach ($plugins as $id => $migration) {
       if (in_array(Unicode::strtolower($id), $migration_ids)) {
-        $matched_migrations [$id] = $migration;
+        $matched_migrations[$id] = $migration;
+      }
+    }
+  }
+
+  // Do not return any migrations which fail to meet requirements.
+  /** @var \Drupal\migrate\Plugin\Migration $migration */
+  foreach ($matched_migrations as $id => $migration) {
+    if ($migration->getSourcePlugin() instanceof RequirementsInterface) {
+      try {
+        $migration->getSourcePlugin()->checkRequirements();
+      }
+      catch (RequirementsException $e) {
+        unset($matched_migrations[$id]);
       }
     }
   }
