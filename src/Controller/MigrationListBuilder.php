@@ -110,7 +110,7 @@ class MigrationListBuilder extends ConfigEntityListBuilder implements EntityHand
     $header['unprocessed'] = $this->t('Unprocessed');
     $header['messages'] = $this->t('Messages');
     $header['last_imported'] = $this->t('Last Imported');
-    return $header; // + parent::buildHeader();
+    return $header;
   }
 
   /**
@@ -130,17 +130,17 @@ class MigrationListBuilder extends ConfigEntityListBuilder implements EntityHand
     if (!$migration_group) {
       $migration_group = 'default';
     }
-    $route_parameters = array(
+    $route_parameters = [
       'migration_group' => $migration_group,
       'migration' => $migration->id(),
-    );
-    $row['label'] = array(
-      'data' => array(
+    ];
+    $row['label'] = [
+      'data' => [
         '#type' => 'link',
         '#title' => $migration->label(),
         '#url' => Url::fromRoute("entity.migration.overview", $route_parameters),
-      ),
-    );
+      ],
+    ];
     $row['machine_name'] = $migration->id();
     $row['status'] = $migration->getStatusLabel();
 
@@ -157,15 +157,15 @@ class MigrationListBuilder extends ConfigEntityListBuilder implements EntityHand
     else {
       $row['unprocessed'] = $row['total'] - $map->processedCount();
     }
-    $row['messages'] = array(
-      'data' => array(
+    $row['messages'] = [
+      'data' => [
         '#type' => 'link',
         '#title' => $map->messageCount(),
         '#url' => Url::fromRoute("migrate_tools.messages", $route_parameters),
-      ),
-    );
+      ],
+    ];
     $migrate_last_imported_store = \Drupal::keyValue('migrate_last_imported');
-    $last_imported =  $migrate_last_imported_store->get($migration->id(), FALSE);
+    $last_imported = $migrate_last_imported_store->get($migration->id(), FALSE);
     if ($last_imported) {
       /** @var DateFormatter $date_formatter */
       $date_formatter = \Drupal::service('date.formatter');
@@ -175,21 +175,7 @@ class MigrationListBuilder extends ConfigEntityListBuilder implements EntityHand
     else {
       $row['last_imported'] = '';
     }
-    return $row; // + parent::buildRow($migration_entity);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getDefaultOperations(EntityInterface $entity) {
-    $operations = parent::getDefaultOperations($entity);
-    $migration_group = $entity->get('migration_group');
-    if (!$migration_group) {
-      $migration_group = 'default';
-    }
-//    $this->addGroupParameter($operations['edit']['url'], $migration_group);
-//    $this->addGroupParameter($operations['delete']['url'], $migration_group);
-    return $operations;
+    return $row;
   }
 
   /**
