@@ -5,9 +5,13 @@ namespace Drupal\migrate_tools\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Component\Utility\Xss;
 use Drupal\Component\Utility\Html;
+use Drupal\Core\Routing\CurrentRouteMatch;
 use Drupal\migrate\Plugin\MigrationPluginManagerInterface;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+use Drupal\migrate_tools\MigrateBatchExecutable;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Url;
+use Drupal\migrate\MigrateMessage;
 
 /**
  * Returns responses for migrate_tools migration view routes.
@@ -22,13 +26,23 @@ class MigrationController extends ControllerBase implements ContainerInjectionIn
   protected $migrationPluginManager;
 
   /**
+   * The current route match.
+   *
+   * @var \Drupal\Core\Routing\CurrentRouteMatch
+   */
+  protected $currentRouteMatch;
+
+  /**
    * Constructs a new MigrationController object.
    *
    * @param \Drupal\migrate\Plugin\MigrationPluginManagerInterface $migration_plugin_manager
    *   The plugin manager for config entity-based migrations.
+   * @param \Drupal\Core\Routing\CurrentRouteMatch $currentRouteMatch
+   *   The current route match.
    */
-  public function __construct(MigrationPluginManagerInterface $migration_plugin_manager) {
+  public function __construct(MigrationPluginManagerInterface $migration_plugin_manager, CurrentRouteMatch $currentRouteMatch) {
     $this->migrationPluginManager = $migration_plugin_manager;
+    $this->currentRouteMatch = $currentRouteMatch;
   }
 
   /**
@@ -36,7 +50,8 @@ class MigrationController extends ControllerBase implements ContainerInjectionIn
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('plugin.manager.migration')
+      $container->get('plugin.manager.migration'),
+      $container->get('current_route_match')
     );
   }
 
@@ -145,6 +160,35 @@ class MigrationController extends ControllerBase implements ContainerInjectionIn
   }
 
   /**
+   * Run a migration.
+   *
+   * @param string $migration_group
+   *   Machine name of the migration's group.
+   * @param string $migration
+   *   Machine name of the migration.
+   *
+   * @return array
+   *   A render array as expected by drupal_render().
+   */
+  public function run($migration_group, $migration) {
+    /** @var \Drupal\migrate\Plugin\MigrationInterface $migration */
+    $migration = $this->migrationPluginManager->createInstance($migration);
+
+    $migrateMessage = new MigrateMessage();
+    $options = [];
+
+    $executable = new MigrateBatchExecutable($migration, $migrateMessage, $options);
+    $executable->batchImport();
+
+    $migration_group = $this->currentRouteMatch->getParameter('migration_group');
+    $route_parameters = [
+      'migration_group' => $migration_group,
+      'migration' => $migration->id(),
+    ];
+    return batch_process(Url::fromRoute('entity.migration.process', $route_parameters));
+  }
+
+  /**
    * Display process information of a migration entity.
    *
    * @param string $migration_group
@@ -202,6 +246,12 @@ class MigrationController extends ControllerBase implements ContainerInjectionIn
       '#header' => $header,
       '#rows' => $rows,
       '#empty' => $this->t('No process defined.'),
+    ];
+
+    $build['process']['run'] = [
+      '#type' => 'link',
+      '#title' => $this->t('Run'),
+      '#url' => Url::fromRoute('entity.migration.process.run', ['migration_group' => $migration_group, 'migration' => $migration->id()]),
     ];
 
     return $build;
