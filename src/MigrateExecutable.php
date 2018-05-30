@@ -375,7 +375,6 @@ class MigrateExecutable extends MigrateExecutableBase {
     }
     if ($this->feedback && ($this->counter) && $this->counter % $this->feedback == 0) {
       $this->progressMessage(FALSE);
-      $this->resetCounters();
     }
     $this->counter++;
     if ($this->itemLimit && ($this->getProcessedCount() + 1) >= $this->itemLimit) {
