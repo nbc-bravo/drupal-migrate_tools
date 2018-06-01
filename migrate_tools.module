@@ -36,6 +36,13 @@ function migrate_tools_migration_plugins_alter(array &$migrations) {
   /** @var \Drupal\Core\TempStore\PrivateTempStoreFactory $store */
   $tempStoreFactory = \Drupal::service('tempstore.private');
   $store = $tempStoreFactory->get('migrate_tools');
+  // TODO: remove work-around after
+  // https://www.drupal.org/project/drupal/issues/2860341 is fixed.
+  if (!\Drupal::request()->hasSession()) {
+    $session = \Drupal::service('session');
+    \Drupal::request()->setSession($session);
+    $session->start();
+  }
   // Get the list of changed migrations.
   $migrationsChanged = $store->get('migrations_changed');
   if (isset($store) && (is_array($migrationsChanged))) {
