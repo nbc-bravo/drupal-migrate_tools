@@ -36,6 +36,13 @@ class MigrateExecutable extends MigrateExecutableBase {
   ];
 
   /**
+   * Counter of map saves, used to detect the item limit threshold.
+   *
+   * @var int
+   */
+  protected $itemLimitCounter = 0;
+
+  /**
    * Counter of map deletions.
    *
    * @var int
@@ -128,6 +135,7 @@ class MigrateExecutable extends MigrateExecutableBase {
     // Only count saves for this migration.
     if ($event->getMap()->getQualifiedMapTableName() == $this->migration->getIdMap()->getQualifiedMapTableName()) {
       $fields = $event->getFields();
+      $this->itemLimitCounter++;
       // Distinguish between creation and update.
       if ($fields['source_row_status'] == MigrateIdMapInterface::STATUS_IMPORTED &&
         $this->preExistingItem
@@ -375,9 +383,10 @@ class MigrateExecutable extends MigrateExecutableBase {
     }
     if ($this->feedback && ($this->counter) && $this->counter % $this->feedback == 0) {
       $this->progressMessage(FALSE);
+      $this->resetCounters();
     }
     $this->counter++;
-    if ($this->itemLimit && ($this->getProcessedCount() + 1) >= $this->itemLimit) {
+    if ($this->itemLimit && ($this->itemLimitCounter + 1) >= $this->itemLimit) {
       $event->getMigration()->interruptMigration(MigrationInterface::RESULT_COMPLETED);
     }
 
