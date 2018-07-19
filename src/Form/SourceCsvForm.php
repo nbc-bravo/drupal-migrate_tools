@@ -12,6 +12,7 @@ use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
 use Drupal\Core\TempStore\TempStoreException;
 use Drupal\Core\Url;
+use Drupal\migrate_plus\Entity\MigrationInterface;
 use Drupal\migrate_source_csv\Plugin\migrate\source\CSV;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\migrate\Plugin\MigrationPluginManagerInterface;
@@ -174,15 +175,15 @@ class SourceCsvForm extends FormBase {
    *
    * @param \Drupal\Core\Session\AccountInterface $account
    *   Run access checks for this account.
-   * @param string $migration
-   *   The migration id.
+   * @param \Drupal\migrate_plus\Entity\MigrationInterface $migration
+   *   The $migration.
    *
    * @return \Drupal\Core\Access\AccessResult
    *   Allowed or forbidden, neutral if tempstore is empty.
    */
-  public function access(AccountInterface $account, $migration) {
+  public function access(AccountInterface $account, MigrationInterface $migration) {
     try {
-      $this->migration = $this->migrationPluginManager->createInstance($migration);
+      $this->migration = $this->migrationPluginManager->createInstance($migration->id(), $migration->toArray());
     }
     catch (PluginException $e) {
       return AccessResult::forbidden();
@@ -201,9 +202,20 @@ class SourceCsvForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, $migration = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, MigrationInterface $migration = NULL) {
     try {
-      $this->migration = $this->migrationPluginManager->createInstance($migration);
+      // @TODO: remove this horrible config work around after
+      // https://www.drupal.org/project/drupal/issues/2986665 is fixed.
+      $configuration = $migration->toArray();
+      if (isset($configuration['source']['column_names']) && is_array($configuration['source']['column_names'])) {
+        $columns = $configuration['source']['column_names'];
+        foreach ($columns as $delta => $values) {
+          $key = key($values);
+          $value = reset($values);
+          $configuration['source']['column_names'][$key] = [$key => $value];
+        }
+      }
+      $this->migration = $this->migrationPluginManager->createInstance($migration->id(), $configuration);
     }
     catch (PluginException $e) {
       return AccessResult::forbidden();
