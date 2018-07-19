@@ -206,23 +206,15 @@ class SourceCsvForm extends FormBase {
     try {
       // @TODO: remove this horrible config work around after
       // https://www.drupal.org/project/drupal/issues/2986665 is fixed.
-      $configuration = $migration->toArray();
-      if (isset($configuration['source']['column_names']) && is_array($configuration['source']['column_names'])) {
-        $columns = $configuration['source']['column_names'];
-        foreach ($columns as $delta => $values) {
-          $key = key($values);
-          $value = reset($values);
-          $configuration['source']['column_names'][$key] = [$key => $value];
-        }
-      }
-      $this->migration = $this->migrationPluginManager->createInstance($migration->id(), $configuration);
+      $this->migration = $this->migrationPluginManager->createInstance($migration->id(), $migration->toArray());
+      /** @var \Drupal\migrate_source_csv\Plugin\migrate\source\CSV $source */
+      $source = $this->migration->getSourcePlugin();
+      $source->setConfiguration($migration->toArray()['source']);
     }
     catch (PluginException $e) {
       return AccessResult::forbidden();
     }
 
-    /** @var \Drupal\migrate_source_csv\Plugin\migrate\source\CSV $source */
-    $source = $this->migration->getSourcePlugin();
     // Get the source file after the properties are initialized.
     $source->initializeIterator();
     $this->file = $source->getFile();
