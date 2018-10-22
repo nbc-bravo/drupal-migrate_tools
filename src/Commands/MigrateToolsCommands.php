@@ -12,7 +12,9 @@ use Drupal\migrate\Plugin\MigrationInterface;
 use Drupal\migrate\Plugin\MigrationPluginManager;
 use Drupal\migrate\Plugin\RequirementsInterface;
 use Drupal\migrate_tools\Drush9LogMigrateMessage;
+use Drupal\migrate_tools\IdMapFilter;
 use Drupal\migrate_tools\MigrateExecutable;
+use Drupal\migrate_tools\MigrateTools;
 use Drush\Commands\DrushCommands;
 
 /**
@@ -231,6 +233,7 @@ class MigrateToolsCommands extends DrushCommands {
    * @option limit Limit on the number of items to process in each migration
    * @option feedback Frequency of progress messages, in items processed
    * @option idlist Comma-separated list of IDs to import
+   * @option idlist-delimiter The delimiter for records, defaults to ':'
    * @option update  In addition to processing unprocessed items from the
    *   source, update previously-imported items with the current data
    * @option force Force an operation to run, even if all dependencies are not
@@ -259,7 +262,7 @@ class MigrateToolsCommands extends DrushCommands {
    * @throws \Exception
    *   If there are not enough parameters to the command.
    */
-  public function import($migration_names = '', array $options = ['all' => NULL, 'group' => NULL, 'tag' => NULL, 'limit' => NULL, 'feedback' => NULL, 'idlist' => NULL, 'update' => NULL, 'force' => NULL, 'execute-dependencies' => NULL]) {
+  public function import($migration_names = '', array $options = ['all' => NULL, 'group' => NULL, 'tag' => NULL, 'limit' => NULL, 'feedback' => NULL, 'idlist' => NULL, 'idlist-delimiter' => ':', 'update' => NULL, 'force' => NULL, 'execute-dependencies' => NULL]) {
     $group_names = $options['group'];
     $tag_names = $options['tag'];
     $all = $options['all'];
@@ -268,7 +271,7 @@ class MigrateToolsCommands extends DrushCommands {
       throw new \Exception(dt('You must specify --all, --group, --tag or one or more migration names separated by commas'));
     }
 
-    foreach (['limit', 'feedback', 'idlist', 'update', 'force', 'execute-dependencies'] as $option) {
+    foreach (['limit', 'feedback', 'idlist', 'idlist-delimiter', 'update', 'force', 'execute-dependencies'] as $option) {
       if ($options[$option]) {
         $additional_options[$option] = $options[$option];
       }
@@ -303,6 +306,9 @@ class MigrateToolsCommands extends DrushCommands {
    * @option group A comma-separated list of migration groups to rollback
    * @option tag ID of the migration tag to rollback
    * @option feedback Frequency of progress messages, in items processed
+   * @option feedback Frequency of progress messages, in items processed
+   * @option idlist Comma-separated list of IDs to rollback
+   * @option idlist-delimiter The delimiter for records, defaults to ':'
    *
    * @usage migrate:rollback --all
    *   Perform all migrations
@@ -314,6 +320,8 @@ class MigrateToolsCommands extends DrushCommands {
    *   Rollback all migrations in the beer group and with the user tag
    * @usage migrate:rollback beer_term,beer_node
    *   Rollback imported terms and nodes
+   * @usage migrate:rollback beer_user --idlist=5
+   *   Rollback imported user record with source ID 5
    * @validate-module-enabled migrate_tools
    *
    * @aliases mr, migrate-rollback
@@ -321,7 +329,7 @@ class MigrateToolsCommands extends DrushCommands {
    * @throws \Exception
    *   If there are not enough parameters to the command.
    */
-  public function rollback($migration_names = '', array $options = ['all' => NULL, 'group' => NULL, 'tag' => NULL, 'feedback' => NULL]) {
+  public function rollback($migration_names = '', array $options = ['all' => NULL, 'group' => NULL, 'tag' => NULL, 'feedback' => NULL, 'idlist' => NULL, 'idlist-delimiter' => ':']) {
     $group_names = $options['group'];
     $tag_names = $options['tag'];
     $all = $options['all'];
@@ -330,8 +338,10 @@ class MigrateToolsCommands extends DrushCommands {
       throw new \Exception(dt('You must specify --all, --group, --tag, or one or more migration names separated by commas'));
     }
 
-    if ($options['feedback']) {
-      $additional_options['feedback'] = $options['feedback'];
+    foreach (['feedback', 'idlist', 'idlist-delimiter'] as $option) {
+      if ($options[$option]) {
+        $additional_options[$option] = $options[$option];
+      }
     }
 
     $migrations = $this->migrationsList($migration_names, $options);
@@ -456,6 +466,8 @@ class MigrateToolsCommands extends DrushCommands {
    * @command migrate:messages
    *
    * @option csv Export messages as a CSV
+   * @option idlist Comma-separated list of IDs to import
+   * @option idlist-delimiter The delimiter for records, defaults to ':'
    *
    * @usage migrate:messages MyNode
    *   Show all messages for the MyNode migration
@@ -473,7 +485,7 @@ class MigrateToolsCommands extends DrushCommands {
    * @return \Consolidation\OutputFormatters\StructuredData\RowsOfFields
    *   Source fields of the given migration formatted as a table.
    */
-  public function messages($migration_id, array $options = ['csv' => NULL]) {
+  public function messages($migration_id, array $options = ['csv' => NULL, 'idlist' => NULL, 'idlist-delimiter' => ':']) {
     /** @var \Drupal\migrate\Plugin\MigrationInterface $migration */
     $migration = $this->migrationPluginManager->createInstance(
       $migration_id
@@ -484,8 +496,8 @@ class MigrateToolsCommands extends DrushCommands {
       );
       return NULL;
     }
-
-    $map = $migration->getIdMap();
+    $id_list = MigrateTools::buildIdList($options);
+    $map = new IdMapFilter($migration->getIdMap(), $id_list);
     $table = [];
     foreach ($map->getMessageIterator() as $row) {
       unset($row->msgid);

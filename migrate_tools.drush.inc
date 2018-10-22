@@ -74,9 +74,11 @@ function migrate_tools_drush_command() {
       'group' => 'A comma-separated list of migration groups to rollback',
       'tag' => 'ID of the migration tag to rollback',
       'feedback' => 'Frequency of progress messages, in items processed',
+      'idlist' => 'Comma-separated list of IDs to import',
     ],
     'arguments' => [
       'migration' => 'Name of migration(s) to rollback. Delimit multiple using commas.',
+      'idlist' => 'Comma-separated list of IDs to import',
     ],
     'examples' => [
       'migrate-rollback --all' => 'Perform all migrations',
@@ -84,6 +86,7 @@ function migrate_tools_drush_command() {
       'migrate-rollback --tag=user' => 'Rollback all migrations with the user tag',
       'migrate-rollback --group=beer --tag=user' => 'Rollback all migrations in the beer group and with the user tag',
       'migrate-rollback beer_term,beer_node' => 'Rollback imported terms and nodes',
+      'migrate-rollback  beer_user --idlist=5' => 'Rollback imported user record with source ID 5',
     ],
     'drupal dependencies' => ['migrate_tools'],
     'aliases' => ['mr'],
@@ -326,8 +329,10 @@ function drush_migrate_tools_migrate_rollback($migration_names = '') {
     return;
   }
 
-  if (drush_get_option('feedback')) {
-    $options['feedback'] = drush_get_option('feedback');
+  foreach (['feedback', 'idlist'] as $option) {
+    if (drush_get_option($option)) {
+      $options[$option] = drush_get_option($option);
+    }
   }
 
   $log = new DrushLogMigrateMessage();
