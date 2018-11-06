@@ -118,8 +118,13 @@ class MigrationExecuteForm extends FormBase {
       - all tasks will run whether or not their dependent tasks have
       completed.'),
     ];
-    // @TODO: Limit is not working. Perhaps because of batch? See
-    // https://www.drupal.org/project/migrate_tools/issues/2924298.
+    $form['options']['limit'] = [
+      '#type' => 'textfield',
+      '#title' => t('Limit to:'),
+      '#size' => 10,
+      '#description' => t('Set a limit of how many items to process for each migration task.'),
+    ];
+
     return $form;
   }
 

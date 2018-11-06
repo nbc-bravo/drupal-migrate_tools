@@ -181,6 +181,12 @@ class MigrateBatchExecutable extends MigrateExecutable {
     $message = new MigrateMessage();
     /** @var \Drupal\migrate\Plugin\MigrationInterface $migration */
     $migration = \Drupal::getContainer()->get('plugin.manager.migration')->createInstance($migration_id);
+
+    // Each batch run we need to reinitialize the counter for the migration.
+    if (!empty($options['limit']) && isset($context['results'][$migration->id()]['@numitems'])) {
+      $options['limit'] = $options['limit'] - $context['results'][$migration->id()]['@numitems'];
+    }
+
     $executable = new MigrateBatchExecutable($migration, $message, $options);
 
     if (empty($context['sandbox']['total'])) {
