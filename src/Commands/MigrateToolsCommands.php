@@ -254,6 +254,8 @@ class MigrateToolsCommands extends DrushCommands {
    *   Import no more than 2 users
    * @usage migrate:import beer_user --idlist=5
    *   Import the user record with source ID 5
+   * @usage migrate:import beer_node_revision --idlist=1:2,2:3,3:5
+   *   Import the node revision record with source IDs [1,2], [2,3], and [3,5]
    *
    * @validate-module-enabled migrate_tools
    *

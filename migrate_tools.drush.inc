@@ -47,6 +47,7 @@ function migrate_tools_drush_command() {
       'limit' => 'Limit on the number of items to process in each migration',
       'feedback' => 'Frequency of progress messages, in items processed',
       'idlist' => 'Comma-separated list of IDs to import',
+      'idlist-delimiter' => 'The delimiter for records, defaults to \':\'',
       'update' => ' In addition to processing unprocessed items from the source, update previously-imported items with the current data',
       'force' => 'Force an operation to run, even if all dependencies are not satisfied',
       'execute-dependencies' => 'Execute all dependent migrations first.',
@@ -62,6 +63,7 @@ function migrate_tools_drush_command() {
       'migrate-import beer_term,beer_node' => 'Import new terms and nodes',
       'migrate-import beer_user --limit=2' => 'Import no more than 2 users',
       'migrate-import beer_user --idlist=5' => 'Import the user record with source ID 5',
+      'migrate-import beer_node_revision --idlist=1:2,2:3,3:5' => "Import the node revision record with source IDs [1,2], [2,3], and [3,5]"
     ],
     'drupal dependencies' => ['migrate_tools'],
     'aliases' => ['mi', 'mim'],
