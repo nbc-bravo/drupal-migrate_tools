@@ -12,6 +12,7 @@ use Drupal\migrate\Plugin\RequirementsInterface;
 use Drupal\migrate_plus\Entity\MigrationGroup;
 use Drupal\migrate_tools\DrushLogMigrateMessage;
 use Drupal\migrate_tools\MigrateExecutable;
+use Drupal\migrate_tools\MigrateTools;
 
 /**
  * Implements hook_drush_command().
@@ -301,7 +302,16 @@ function _drush_migrate_tools_execute_migration(MigrationInterface $migration, $
     $migration->set('requirements', []);
   }
   if (!empty($options['update'])) {
-    $migration->getIdMap()->prepareUpdate();
+    if (empty($options['idlist'])) {
+      $migration->getIdMap()->prepareUpdate();
+    }
+    else {
+      $source_id_values_list = MigrateTools::buildIdList($options);
+      $keys = array_keys($migration->getSourcePlugin()->getIds());
+      foreach ($source_id_values_list as $source_id_values) {
+        $migration->getIdMap()->setUpdate(array_combine($keys, $source_id_values));
+      }
+    }
   }
   $executable = new MigrateExecutable($migration, $log, $options);
   // Function drush_op() provides --simulate support.
