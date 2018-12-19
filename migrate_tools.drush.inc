@@ -573,7 +573,7 @@ function drush_migrate_tools_migration_list($migration_ids = '') {
   // Sort the matched migrations by group.
   if (!empty($matched_migrations)) {
     foreach ($matched_migrations as $id => $migration) {
-      $configured_group_id = empty($migration->get('migration_group')) ? 'default' : $migration->get('migration_group');
+      $configured_group_id = empty($migration->migration_group) ? 'default' : $migration->migration_group;
       $migrations[$configured_group_id][$id] = $migration;
     }
   }

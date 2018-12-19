@@ -97,7 +97,7 @@ class MigrationFormBase extends EntityForm {
     foreach ($groups as $group) {
       $group_options[$group->id()] = $group->label();
     }
-    if (!$migration->get('migration_group') && isset($group_options['default'])) {
+    if (!$migration->migration_group && isset($group_options['default'])) {
       $migration->set('migration_group', 'default');
     }
 
@@ -105,7 +105,7 @@ class MigrationFormBase extends EntityForm {
       '#type' => 'select',
       '#title' => $this->t('Migration Group'),
       '#empty_value' => '',
-      '#default_value' => $migration->get('migration_group'),
+      '#default_value' => $migration->migration_group,
       '#options' => $group_options,
       '#description' => $this->t('Assign this migration to an existing group.'),
     ];
