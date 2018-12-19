@@ -120,7 +120,12 @@ class MigrateToolsCommands extends DrushCommands {
    * @return \Consolidation\OutputFormatters\StructuredData\RowsOfFields
    *   Migrations status formatted as table.
    */
-  public function status($migration_names = '', array $options = ['group' => NULL, 'tag' => NULL, 'names-only' => NULL]) {
+  public function status($migration_names = '', array $options = []) {
+    $options += [
+      'group' => NULL,
+      'tag' => NULL,
+      'names-only' => NULL,
+    ];
     $names_only = $options['names-only'];
 
     $migrations = $this->migrationsList($migration_names, $options);
@@ -264,19 +269,25 @@ class MigrateToolsCommands extends DrushCommands {
    * @throws \Exception
    *   If there are not enough parameters to the command.
    */
-  public function import($migration_names = '', array $options = ['all' => NULL, 'group' => NULL, 'tag' => NULL, 'limit' => NULL, 'feedback' => NULL, 'idlist' => NULL, 'idlist-delimiter' => ':', 'update' => NULL, 'force' => NULL, 'execute-dependencies' => NULL]) {
+  public function import($migration_names = '', array $options = []) {
+    $options += [
+      'all' => NULL,
+      'group' => NULL,
+      'tag' => NULL,
+      'limit' => NULL,
+      'feedback' => NULL,
+      'idlist' => NULL,
+      'idlist-delimiter' => ':',
+      'update' => NULL,
+      'force' => NULL,
+      'execute-dependencies' => NULL,
+    ];
     $group_names = $options['group'];
     $tag_names = $options['tag'];
     $all = $options['all'];
     $additional_options = [];
     if (!$all && !$group_names && !$migration_names && !$tag_names) {
       throw new \Exception(dt('You must specify --all, --group, --tag or one or more migration names separated by commas'));
-    }
-
-    foreach (['limit', 'feedback', 'idlist', 'idlist-delimiter', 'update', 'force', 'execute-dependencies'] as $option) {
-      if ($options[$option]) {
-        $additional_options[$option] = $options[$option];
-      }
     }
 
     $migrations = $this->migrationsList($migration_names, $options);
@@ -331,7 +342,15 @@ class MigrateToolsCommands extends DrushCommands {
    * @throws \Exception
    *   If there are not enough parameters to the command.
    */
-  public function rollback($migration_names = '', array $options = ['all' => NULL, 'group' => NULL, 'tag' => NULL, 'feedback' => NULL, 'idlist' => NULL, 'idlist-delimiter' => ':']) {
+  public function rollback($migration_names = '', array $options = []) {
+    $options += [
+      'all' => NULL,
+      'group' => NULL,
+      'tag' => NULL,
+      'feedback' => NULL,
+      'idlist' => NULL,
+      'idlist-delimiter' => ':',
+    ];
     $group_names = $options['group'];
     $tag_names = $options['tag'];
     $all = $options['all'];
@@ -487,7 +506,12 @@ class MigrateToolsCommands extends DrushCommands {
    * @return \Consolidation\OutputFormatters\StructuredData\RowsOfFields
    *   Source fields of the given migration formatted as a table.
    */
-  public function messages($migration_id, array $options = ['csv' => NULL, 'idlist' => NULL, 'idlist-delimiter' => ':']) {
+  public function messages($migration_id, array $options = []) {
+    $options += [
+      'csv' => NULL,
+      'idlist' => NULL,
+      'idlist-delimiter' => ':',
+    ];
     /** @var \Drupal\migrate\Plugin\MigrationInterface $migration */
     $migration = $this->migrationPluginManager->createInstance(
       $migration_id

@@ -44,7 +44,7 @@ class DrushTest extends MigrateTestBase {
   ];
 
   /**
-   * The migrateTooldCommand drush service.
+   * The Migrate Tools Command drush service.
    *
    * @var \Drupal\migrate_tools\Commands\MigrateToolsCommands
    */

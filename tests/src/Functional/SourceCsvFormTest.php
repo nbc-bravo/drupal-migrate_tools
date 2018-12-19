@@ -134,7 +134,7 @@ EOD;
       'edit-name' => 1,
       'edit-description' => 1,
     ];
-    $this->drupalPostForm($editUrlPath, $edit, t('Submit'));
+    $this->drupalPostForm($editUrlPath, $edit, $this->t('Submit'));
     $session->responseContains('Source properties can not share the same source column.');
     $this->assertTrue($session->optionExists('edit-vid', 'description')
       ->isSelected());
@@ -149,7 +149,7 @@ EOD;
       'edit-name' => 0,
       'edit-description' => 1,
     ];
-    $this->drupalPostForm($editUrlPath, $edit, t('Submit'));
+    $this->drupalPostForm($editUrlPath, $edit, $this->t('Submit'));
     $this->assertTrue($session->optionExists('edit-vid', 'weight')
       ->isSelected());
     $this->assertTrue($session->optionExists('edit-name', 'vid')
@@ -184,22 +184,22 @@ EOD;
     $edit = [
       'operation' => 'import',
     ];
-    $this->drupalPostForm($executeUrlPath, $edit, t('Execute'));
+    $this->drupalPostForm($executeUrlPath, $edit, $this->t('Execute'));
     $session->responseContains("Processed 1 item (1 created, 0 updated, 0 failed, 0 ignored) - done with 'csv_source_test'");
 
     // Rollback.
     $edit = [
       'operation' => 'rollback',
     ];
-    $this->drupalPostForm($executeUrlPath, $edit, t('Execute'));
+    $this->drupalPostForm($executeUrlPath, $edit, $this->t('Execute'));
 
-    // Restore to an order that will succesfully migrate.
+    // Restore to an order that will successfully migrate.
     $edit = [
       'edit-vid' => 0,
       'edit-name' => 1,
       'edit-description' => 2,
     ];
-    $this->drupalPostForm($editUrlPath, $edit, t('Submit'));
+    $this->drupalPostForm($editUrlPath, $edit, $this->t('Submit'));
     $this->assertTrue($session->optionExists('edit-vid', 'vid')
       ->isSelected());
     $this->assertTrue($session->optionExists('edit-name', 'name')
@@ -212,7 +212,7 @@ EOD;
       'operation' => 'import',
     ];
     drupal_flush_all_caches();
-    $this->drupalPostForm($executeUrlPath, $edit, t('Execute'));
+    $this->drupalPostForm($executeUrlPath, $edit, $this->t('Execute'));
     $session->responseContains("Processed 4 items (4 created, 0 updated, 0 failed, 0 ignored) - done with 'csv_source_test'");
     $this->assertEntity('tags', 'Tags', 'Use tags to group articles');
     $this->assertEntity('forums', 'Sujet de discussion', 'Forum navigation vocabulary');

@@ -64,7 +64,7 @@ function migrate_tools_drush_command() {
       'migrate-import beer_term,beer_node' => 'Import new terms and nodes',
       'migrate-import beer_user --limit=2' => 'Import no more than 2 users',
       'migrate-import beer_user --idlist=5' => 'Import the user record with source ID 5',
-      'migrate-import beer_node_revision --idlist=1:2,2:3,3:5' => "Import the node revision record with source IDs [1,2], [2,3], and [3,5]"
+      'migrate-import beer_node_revision --idlist=1:2,2:3,3:5' => "Import the node revision record with source IDs [1,2], [2,3], and [3,5]",
     ],
     'drupal dependencies' => ['migrate_tools'],
     'aliases' => ['mi', 'mim'],
@@ -382,12 +382,15 @@ function drush_migrate_tools_migrate_stop($migration_id = '') {
       case MigrationInterface::STATUS_IDLE:
         drush_log(dt('Migration @id is idle', ['@id' => $migration_id]), 'warning');
         break;
+
       case MigrationInterface::STATUS_DISABLED:
         drush_log(dt('Migration @id is disabled', ['@id' => $migration_id]), 'warning');
         break;
+
       case MigrationInterface::STATUS_STOPPING:
         drush_log(dt('Migration @id is already stopping', ['@id' => $migration_id]), 'warning');
         break;
+
       default:
         $migration->interruptMigration(MigrationInterface::RESULT_STOPPED);
         drush_log(dt('Migration @id requested to stop', ['@id' => $migration_id]), 'success');
