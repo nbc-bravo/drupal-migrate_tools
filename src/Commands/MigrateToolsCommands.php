@@ -3,7 +3,6 @@
 namespace Drupal\migrate_tools\Commands;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
-use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Datetime\DateFormatter;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\KeyValueStore\KeyValueFactoryInterface;
@@ -639,9 +638,9 @@ class MigrateToolsCommands extends DrushCommands {
     }
     else {
       // Get the requested migrations.
-      $migration_ids = explode(',', Unicode::strtolower($migration_ids));
+      $migration_ids = explode(',', mb_strtolower($migration_ids));
       foreach ($plugins as $id => $migration) {
-        if (in_array(Unicode::strtolower($id), $migration_ids)) {
+        if (in_array(mb_strtolower($id), $migration_ids)) {
           $matched_migrations[$id] = $migration;
         }
       }
@@ -677,7 +676,7 @@ class MigrateToolsCommands extends DrushCommands {
               )) ? $search_value : 'default';
               if (empty($search_value) || $search_value == $configured_id) {
                 if (empty($migration_ids) || in_array(
-                    Unicode::strtolower($id),
+                    mb_strtolower($id),
                     $migration_ids
                   )) {
                   $filtered_migrations[$id] = $migration;

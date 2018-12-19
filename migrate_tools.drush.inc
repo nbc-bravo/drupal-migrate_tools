@@ -5,7 +5,6 @@
  * Command-line tools to aid performing and developing migrations.
  */
 
-use Drupal\Component\Utility\Unicode;
 use Drupal\migrate\Exception\RequirementsException;
 use Drupal\migrate\Plugin\MigrationInterface;
 use Drupal\migrate\Plugin\RequirementsInterface;
@@ -525,9 +524,9 @@ function drush_migrate_tools_migration_list($migration_ids = '') {
   }
   else {
     // Get the requested migrations.
-    $migration_ids = explode(',', Unicode::strtolower($migration_ids));
+    $migration_ids = explode(',', mb_strtolower($migration_ids));
     foreach ($plugins as $id => $migration) {
-      if (in_array(Unicode::strtolower($id), $migration_ids)) {
+      if (in_array(mb_strtolower($id), $migration_ids)) {
         $matched_migrations[$id] = $migration;
       }
     }
@@ -559,7 +558,7 @@ function drush_migrate_tools_migration_list($migration_ids = '') {
             $configured_values = (array) $migration->get($property);
             $configured_id = (in_array($search_value, $configured_values)) ? $search_value : 'default';
             if (empty($search_value) || $search_value == $configured_id) {
-              if (empty($migration_ids) || in_array(Unicode::strtolower($id), $migration_ids)) {
+              if (empty($migration_ids) || in_array(mb_strtolower($id), $migration_ids)) {
                 $filtered_migrations[$id] = $migration;
               }
             }

@@ -85,8 +85,6 @@ class DrushTest extends MigrateTestBase {
 
   /**
    * Tests drush ms.
-   *
-   * @group legacy
    */
   public function testStatus() {
     $this->executeMigration('fruit_terms');
@@ -103,8 +101,6 @@ class DrushTest extends MigrateTestBase {
 
   /**
    * Tests drush mim.
-   *
-   * @group legacy
    *
    * @throws \Drupal\Component\Plugin\Exception\PluginException
    */
@@ -140,8 +136,6 @@ class DrushTest extends MigrateTestBase {
 
   /**
    * Tests drush mr.
-   *
-   * @group legacy
    */
   public function testRollback() {
     $this->executeMigration('fruit_terms');
@@ -155,8 +149,6 @@ class DrushTest extends MigrateTestBase {
 
   /**
    * Tests drush mrs.
-   *
-   * @group legacy
    *
    * @throws \Drupal\Component\Plugin\Exception\PluginException
    */
