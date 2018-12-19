@@ -4,6 +4,7 @@ namespace Drupal\Tests\migrate_tools\Functional;
 
 use Drupal\Core\StreamWrapper\PublicStream;
 use Drupal\Core\StreamWrapper\StreamWrapperInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Tests\BrowserTestBase;
 use Drupal\taxonomy\Entity\Vocabulary;
 use Drupal\taxonomy\VocabularyInterface;
@@ -16,6 +17,7 @@ use Drupal\taxonomy\VocabularyInterface;
  * @group migrate_tools
  */
 class SourceCsvFormTest extends BrowserTestBase {
+  use StringTranslationTrait;
 
   /**
    * Temporary store for column assignment changes.

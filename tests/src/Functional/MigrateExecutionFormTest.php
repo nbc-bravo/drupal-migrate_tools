@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\migrate_tools\Functional;
 
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\taxonomy\Entity\Vocabulary;
 use Drupal\Tests\BrowserTestBase;
 
@@ -11,6 +12,7 @@ use Drupal\Tests\BrowserTestBase;
  * @group migrate_tools
  */
 class MigrateExecutionFormTest extends BrowserTestBase {
+  use StringTranslationTrait;
 
   /**
    * {@inheritdoc}

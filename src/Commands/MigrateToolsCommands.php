@@ -290,6 +290,21 @@ class MigrateToolsCommands extends DrushCommands {
       throw new \Exception(dt('You must specify --all, --group, --tag or one or more migration names separated by commas'));
     }
 
+    $possible_options = [
+      'limit',
+      'feedback',
+      'idlist',
+      'idlist-delimiter',
+      'update',
+      'force',
+      'execute-dependencies',
+    ];
+    foreach ($possible_options as $option) {
+      if ($options[$option]) {
+        $additional_options[$option] = $options[$option];
+      }
+    }
+
     $migrations = $this->migrationsList($migration_names, $options);
     if (empty($migrations)) {
       $this->logger->error(dt('No migrations found.'));
