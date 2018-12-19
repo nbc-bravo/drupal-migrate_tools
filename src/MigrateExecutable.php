@@ -287,6 +287,8 @@ class MigrateExecutable extends MigrateExecutableBase {
    *   The map event.
    */
   public function onPostRollback(MigrateRollbackEvent $event) {
+    $migrate_last_imported_store = \Drupal::keyValue('migrate_last_imported');
+    $migrate_last_imported_store->set($event->getMigration()->id(), FALSE);
     $this->rollbackMessage();
     $this->removeListeners();
   }
