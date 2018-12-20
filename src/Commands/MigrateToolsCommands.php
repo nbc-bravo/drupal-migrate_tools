@@ -90,6 +90,8 @@ class MigrateToolsCommands extends DrushCommands {
    * @option tag Name of the migration tag to list
    * @option names-only Only return names, not all the details (faster)
    *
+   * @default $options []
+   *
    * @usage migrate:status
    *   Retrieve status for all migrations
    * @usage migrate:status --group=beer
@@ -244,6 +246,8 @@ class MigrateToolsCommands extends DrushCommands {
    *   satisfied
    * @option execute-dependencies Execute all dependent migrations first.
    *
+   * @default $options []
+   *
    * @usage migrate:import --all
    *   Perform all migrations
    * @usage migrate:import --group=beer
@@ -336,6 +340,8 @@ class MigrateToolsCommands extends DrushCommands {
    * @option feedback Frequency of progress messages, in items processed
    * @option idlist Comma-separated list of IDs to rollback
    * @option idlist-delimiter The delimiter for records, defaults to ':'
+   *
+   * @default $options []
    *
    * @usage migrate:rollback --all
    *   Perform all migrations
@@ -504,6 +510,8 @@ class MigrateToolsCommands extends DrushCommands {
    * @option idlist Comma-separated list of IDs to import
    * @option idlist-delimiter The delimiter for records, defaults to ':'
    *
+   * @default $options []
+   *
    * @usage migrate:messages MyNode
    *   Show all messages for the MyNode migration
    *
@@ -613,6 +621,8 @@ class MigrateToolsCommands extends DrushCommands {
    * @param array $options
    *   Command options.
    *
+   * @default $options []
+   *
    * @return \Drupal\migrate\Plugin\MigrationInterface[][]
    *   An array keyed by migration group, each value containing an array of
    *   migrations or an empty array if no migrations match the input criteria.
@@ -711,6 +721,8 @@ class MigrateToolsCommands extends DrushCommands {
    *   The migration ID (not used, just an artifact of array_walk()).
    * @param array $options
    *   Additional options of the command.
+   *
+   * @default $options []
    *
    * @throws \Exception
    *   If some migrations failed during execution.
