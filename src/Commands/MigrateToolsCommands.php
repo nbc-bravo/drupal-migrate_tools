@@ -4,6 +4,7 @@ namespace Drupal\migrate_tools\Commands;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Drupal\Core\Datetime\DateFormatter;
+use Drupal\Core\Entity\EntityStorageException;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\KeyValueStore\KeyValueFactoryInterface;
 use Drupal\migrate\Exception\RequirementsException;
@@ -773,6 +774,42 @@ class MigrateToolsCommands extends DrushCommands {
           ['!name' => $migration_id, '!count' => $count]
         )
       );
+    }
+  }
+
+  /**
+   * Deletes a migration group
+   *
+   * @param string $group_id
+   *   The migration group identifier.
+   *
+   * @command migrate:delete-group
+   *
+   * @usage migrate:delete-group beer
+   *   Deletes migration group beer.
+   *
+   * @validate-module-enabled migrate_tools
+   *
+   * @aliases mgd
+   */
+  public function deleteGroup($group_id) {
+    $group = $this->entityTypeManager->getStorage('migration_group')->load($group_id);
+
+    if (empty($group)) {
+      $this->logger()->warning(
+        dt('Migration group @id does not exist', ['@id' => $group_id])
+      );
+    }
+    else {
+      try {
+        $group->delete();
+      }
+      catch(EntityStorageException $e) {
+        $this->logger()->error(
+          dt('Could not delete migration group @id does not exist', ['@id' => $group_id])
+        );
+      }
+      $this->logger()->success(dt('Deleted migration group @id', ['@id' => $group_id]));
     }
   }
 

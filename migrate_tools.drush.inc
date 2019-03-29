@@ -5,6 +5,7 @@
  * Command-line tools to aid performing and developing migrations.
  */
 
+use Drupal\Core\Entity\EntityStorageException;
 use Drupal\migrate\Exception\RequirementsException;
 use Drupal\migrate\Plugin\MigrationInterface;
 use Drupal\migrate\Plugin\RequirementsInterface;
@@ -137,6 +138,18 @@ function migrate_tools_drush_command() {
     ],
     'drupal dependencies' => ['migrate_tools'],
     'aliases' => ['mfs'],
+  ];
+
+  $items['migrate-delete-group'] = [
+    'description' => 'Deletes a migration group.',
+    'arguments' => [
+        'Migration group' => 'The migration group identifier',
+      ],
+    'examples' => [
+        'migrate-delete-group beer' => 'Deletes migration group beer.',
+      ],
+    'drupal dependencies' => ['migrate_tools'],
+    'aliases' => ['mgd'],
   ];
 
   return $items;
@@ -577,4 +590,31 @@ function drush_migrate_tools_migration_list($migration_ids = '') {
     }
   }
   return isset($migrations) ? $migrations : [];
+}
+
+/**
+ * Deletes a migration group
+ *
+ * @param string $group_id
+ *   The migration group identifier.
+ */
+function drush_migrate_tools_delete_migrate_group($group_id) {
+  $group = \Drupal::entityTypeManager()->getStorage('migration_group')->load($group_id);
+
+  if (empty($group)) {
+    drush_log(
+      dt('Migration group @id does not exist', ['@id' => $group_id])
+    , 'warning');
+  }
+  else {
+    try {
+      $group->delete();
+    }
+    catch(EntityStorageException $e) {
+      drush_log(
+        dt('Could not delete migration group @id does not exist', ['@id' => $group_id])
+      , 'error');
+    }
+    drush_log(dt('Deleted migration group @id', ['@id' => $group_id]), 'success');
+  }
 }
