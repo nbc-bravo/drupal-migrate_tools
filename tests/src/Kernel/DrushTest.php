@@ -89,7 +89,7 @@ class DrushTest extends MigrateTestBase {
   public function testStatus() {
     $this->executeMigration('fruit_terms');
     /** @var \Consolidation\OutputFormatters\StructuredData\RowsOfFields $result */
-    $result = $this->commands->status('fruit_terms');
+    $result = $this->commands->status('fruit_terms', []);
     $rows = $result->getArrayCopy();
     $this->assertSame(1, count($rows));
     $row = reset($rows);
@@ -110,7 +110,7 @@ class DrushTest extends MigrateTestBase {
     $id_map = $migration->getIdMap();
     $this->commands->import('fruit_terms', ['idlist' => 'Apple'] + $this->importBaseOptions);
     $this->assertSame(1, $id_map->importedCount());
-    $this->commands->import('fruit_terms');
+    $this->commands->import('fruit_terms', []);
     $this->assertSame(3, $id_map->importedCount());
     $this->commands->import('fruit_terms', ['idlist' => 'Apple', 'update' => TRUE] + $this->importBaseOptions);
     $this->assertSame(0, count($id_map->getRowsNeedingUpdate(100)));
@@ -129,7 +129,7 @@ class DrushTest extends MigrateTestBase {
     $id_map = $migration->getIdMap();
     $id_map->saveMessage(['name' => 'Apple'], $message);
     /** @var \Consolidation\OutputFormatters\StructuredData\RowsOfFields $result */
-    $result = $this->commands->messages('fruit_terms');
+    $result = $this->commands->messages('fruit_terms', []);
     $rows = $result->getArrayCopy();
     $this->assertSame($message, $rows[0]['message']);
   }
@@ -143,7 +143,7 @@ class DrushTest extends MigrateTestBase {
     $migration = $this->migrationPluginManager->createInstance('fruit_terms');
     $id_map = $migration->getIdMap();
     $this->assertSame(3, $id_map->importedCount());
-    $this->commands->rollback('fruit_terms');
+    $this->commands->rollback('fruit_terms', []);
     $this->assertSame(0, $id_map->importedCount());
   }
 
@@ -156,7 +156,7 @@ class DrushTest extends MigrateTestBase {
     /** @var \Drupal\migrate\Plugin\MigrationInterface $migration */
     $migration = $this->migrationPluginManager->createInstance('fruit_terms');
     $migration->setStatus(MigrationInterface::STATUS_IMPORTING);
-    $this->assertSame('Importing', $this->commands->status('fruit_terms')->getArrayCopy()[0]['status']);
+    $this->assertSame('Importing', $this->commands->status('fruit_terms', [])->getArrayCopy()[0]['status']);
     $this->commands->resetStatus('fruit_terms');
     $this->assertSame(MigrationInterface::STATUS_IDLE, $migration->getStatus());
 

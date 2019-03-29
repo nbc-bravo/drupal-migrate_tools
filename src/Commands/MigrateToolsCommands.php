@@ -122,7 +122,11 @@ class MigrateToolsCommands extends DrushCommands {
    * @return \Consolidation\OutputFormatters\StructuredData\RowsOfFields
    *   Migrations status formatted as table.
    */
-  public function status($migration_names = '', array $options = []) {
+  public function status($migration_names = '', array $options = [
+    'group' => self::REQ,
+    'tag' => self::REQ,
+    'names-only' => FALSE,
+  ]) {
     $options += [
       'group' => NULL,
       'tag' => NULL,
@@ -273,7 +277,18 @@ class MigrateToolsCommands extends DrushCommands {
    * @throws \Exception
    *   If there are not enough parameters to the command.
    */
-  public function import($migration_names = '', array $options = []) {
+  public function import($migration_names = '', array $options = [
+    'all' => FALSE,
+    'group' => self::REQ,
+    'tag' => self::REQ,
+    'limit' => self::REQ,
+    'feedback' => self::REQ,
+    'idlist' => self::REQ,
+    'idlist-delimiter' => ':',
+    'update' => FALSE,
+    'force' => FALSE,
+    'execute-dependencies' => FALSE,
+  ]) {
     $options += [
       'all' => NULL,
       'group' => NULL,
@@ -363,7 +378,14 @@ class MigrateToolsCommands extends DrushCommands {
    * @throws \Exception
    *   If there are not enough parameters to the command.
    */
-  public function rollback($migration_names = '', array $options = []) {
+  public function rollback($migration_names = '', array $options = [
+    'all' => FALSE,
+    'group' => self::REQ,
+    'tag' => self::REQ,
+    'feedback' => self::REQ,
+    'idlist' => self::REQ,
+    'idlist-delimiter' => ':',
+  ]) {
     $options += [
       'all' => NULL,
       'group' => NULL,
@@ -529,7 +551,11 @@ class MigrateToolsCommands extends DrushCommands {
    * @return \Consolidation\OutputFormatters\StructuredData\RowsOfFields
    *   Source fields of the given migration formatted as a table.
    */
-  public function messages($migration_id, array $options = []) {
+  public function messages($migration_id, array $options = [
+    'csv' => FALSE,
+    'idlist' => self::REQ,
+    'idlist-delimiter' => ':',
+  ]) {
     $options += [
       'csv' => NULL,
       'idlist' => NULL,
